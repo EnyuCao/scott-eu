@@ -10,6 +10,10 @@ pushd soar_robot
 popd
 
 
+
+
+
+
 #####################################
 # Propose operators
 # Multiple productions can fire at the same time. 
@@ -27,9 +31,9 @@ sp {soar-robot*propose*act
 -->
   	(<s> ^operator <o>  +)
 	(<o> ^name act) 
-#    (write (crlf)|===> Proposing act | (crlf))
-#    (write (crlf) |===> robot x | <x> (crlf))
-#    (write (crlf) |===> robot y | <y> (crlf))
+    (write (crlf)|===> Proposing act | (crlf))
+    (write (crlf) |===> robot x | <x> (crlf))
+    (write (crlf) |===> robot y | <y> (crlf))
 }
 
 
@@ -49,11 +53,35 @@ sp {soar-robot*propose*act
 #    (write (crlf) |===> Apply Moving to waypoint | (crlf))
 #}
 
-########################################################
-# TODO Apply*find-waypoint:
-# 
 
-sp {apply*find-waypoint
+##TODO###################################
+#Copy new tasks at input to self memory
+#
+sp {soar-robot*apply*copy-new-tasks
+    (state <s> ^operator.name act)
+    (state <s> ^io.input-link.tasks <tsk>) #TODO must be tested in an operator to only happen once
+    (<s> ^self <slf>)
+#    -(<slf> ^tasks <prevtsk>)
+-->
+    (<slf> ^tasks <tsk>)
+    (write (crlf) |===> apply*copy-new-tasks | (crlf))
+}
+#sp {soar-robot*apply*overwrite-new-tasks
+#    (state <s> ^operator.name act)
+#    (state <s> ^io.input-link.tasks <tsk>)
+#    (<s> ^self <slf>)
+#    (<slf> ^tasks <prevtsk>)
+#-->
+#    #-(<slf> ^tasks <prevtsk>)
+#    (<slf> ^tasks <tsk>)
+#    (write (crlf) |===> apply*overwrite-new-tasks | (crlf))
+#}
+
+
+########################################################
+# apply*move-to-next-waypoint:
+# 
+sp {apply*move-to-next-waypoint
     (state <s> ^operator.name act)
     (state <s> ^io.input-link.tasks.next_task.waypoint <wp>)
     (<s> ^self.topological_map.waypoint <tmwp>)
@@ -66,7 +94,7 @@ sp {apply*find-waypoint
     (<ol> ^target-y <ty>)
 
 -->
-    (write (crlf) |===> Next task waypoint: | <wp> (crlf))
+    (write (crlf) |===> apply*move-to-next-waypoint: | <wp> (crlf))
     (write (crlf) |===> target x | <x> (crlf))
     (write (crlf) |===> target y | <y> (crlf))
     (<ol> ^target-waypoint <mto> -)
@@ -81,9 +109,8 @@ sp {apply*find-waypoint
 
 #    (<ol> ^moveto.x x-val)
 #    (<ol> ^moveto.y y-val)
-#    (write (crlf) |===> Apply Moving to waypoint | (crlf))
+#    (write (crlf) |===> apply*move-to-next-waypoint | (crlf))
 }
-#TODO ^topological_map.waypoint
 
 
 ######################################
